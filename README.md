@@ -1,3 +1,3 @@
 # PY-QT
 
-2048 Game on QT
+2048 Game with PyQT
