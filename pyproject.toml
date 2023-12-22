@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "2048-pyqt"
+version = "0.1.0"
+description = ""
+authors = ["duxevy <79513394+duxevy@users.noreply.github.com>"]
+readme = "README.md"
+packages = [{include = "2048_pyqt"}]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.13"
+pyside6 = "^6.6.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
