@@ -63,15 +63,17 @@ class Game(QWidget):  #
         self.randomSetLabels(3)
 
     def keyPressEvent(self, e):
-        if e.key() == Qt.Key_Up:
-            self.gridMove('up')
-        elif e.key() == Qt.Key_Down:
-            self.gridMove('down')
-        elif e.key() == Qt.Key_Left:
-            self.gridMove('left')
-        elif e.key() == Qt.Key_Right:
-            self.gridMove('right')
-        elif e.key() == Qt.Key_R:
+        key_to_move = {
+            Qt.Key_Up: 'up',
+            Qt.Key_Down: 'down',
+            Qt.Key_Left: 'left',
+            Qt.Key_Right: 'right',
+            Qt.Key_R: 'reset'
+        }
+        move = key_to_move.get(e.key())
+        if move in ('up', 'down', 'left', 'right'):
+            self.gridMove(move)
+        elif move == 'reset':
             self.reset()
 
     def gridMove(self, direction):
