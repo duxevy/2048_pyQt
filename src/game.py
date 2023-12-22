@@ -110,6 +110,7 @@ class Game(QWidget):  #
             positions = [get_pos(primary, secondary) for secondary in secondary_range]
             self.updateLabels(positions, texts)
 
+    # todo do refactoring
     def mergeSameLabel(self, direction):
         if direction == 'right':
             for j in range(ROW):
@@ -174,8 +175,10 @@ class Game(QWidget):  #
             self.setTextAndColor(label_index, num, setIsMove=False)
 
     def getEmptyGrid(self):
-        results = [index for index, labels in enumerate(self.labels) if labels.text() == '0']
-        return results
+        return [
+            index
+            for index, labels in enumerate(self.labels) if labels.text() == '0'
+        ]
 
     def setTextAndColor(self, index, num, setIsMove=True):
         if setIsMove:
