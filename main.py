@@ -7,4 +7,4 @@ from src import Game
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     game = Game()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
