@@ -1,67 +1,23 @@
-# -*- coding: utf-8 -*-
-import sys
 import random
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPalette, QColor, QFont
-from PyQt5.QtWidgets import (QWidget, QGridLayout, QApplication, QLabel, QMessageBox)
+from PySide6.QtCore import Qt
+from PySide6.QtGui import (
+    QPalette,
+    QFont
+)
+from PySide6.QtWidgets import (
+    QWidget,
+    QGridLayout,
+    QLabel,
+    QMessageBox
+)
 
-ROW = 4
-COL = 4
-
-NUM_MAP_COLOR = {
-    '0': {
-        'background': QColor(0xcdc1b4),
-        'font': QColor(0xcdc1b4)
-    },
-    '2': {
-        'background': QColor(0xeee4da),
-        'font': QColor(0x776e65)
-    },
-    '4': {
-        'background': QColor(0xede0c8),
-        'font': QColor(0x776e65)
-    },
-    '8': {
-        'background': QColor(0xf2b179),
-        'font': QColor(0xffffff)
-    },
-    '16': {
-        'background': QColor(0xf59563),
-        'font': QColor(0xffffff)
-    },
-    '32': {
-        'background': QColor(0xf67c5f),
-        'font': QColor(0xffffff)
-    },
-    '64': {
-        'background': QColor(0xf65e3b),
-        'font': QColor(0xffffff)
-    },
-    '128': {
-        'background': QColor(0xedcf72),
-        'font': QColor(0xffffff)
-    },
-    '256': {
-        'background': QColor(0xedcc61),
-        'font': QColor(0xffffff)
-    },
-    '512': {
-        'background': QColor(0xedc850),
-        'font': QColor(0xffffff)
-    },
-    '1024': {
-        'background': QColor(0xedc53f),
-        'font': QColor(0xffffff)
-    },
-    '2048': {
-        'background': QColor(0xedc22e),
-        'font': QColor(0xffffff)
-    }
-}
+from config import (
+    ROW, COL, NUM_MAP_COLOR
+)
 
 
-class Game(QWidget): #
+class Game(QWidget):  #
 
     def __init__(self):
         super().__init__()
@@ -290,9 +246,3 @@ class Game(QWidget): #
                                       QMessageBox.Ok)
         if button == QMessageBox.Ok:
             self.reset()
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    game = Game()
-    sys.exit(app.exec_())
