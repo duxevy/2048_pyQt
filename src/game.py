@@ -1,67 +1,23 @@
-# -*- coding: utf-8 -*-
-import sys
 import random
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPalette, QColor, QFont
-from PyQt5.QtWidgets import (QWidget, QGridLayout, QApplication, QLabel, QMessageBox)
+from PySide6.QtCore import Qt
+from PySide6.QtGui import (
+    QPalette,
+    QFont
+)
+from PySide6.QtWidgets import (
+    QWidget,
+    QGridLayout,
+    QLabel,
+    QMessageBox
+)
 
-ROW = 4
-COL = 4
-
-NUM_MAP_COLOR = {
-    '0': {
-        'background': QColor(0xcdc1b4),
-        'font': QColor(0xcdc1b4)
-    },
-    '2': {
-        'background': QColor(0xeee4da),
-        'font': QColor(0x776e65)
-    },
-    '4': {
-        'background': QColor(0xede0c8),
-        'font': QColor(0x776e65)
-    },
-    '8': {
-        'background': QColor(0xf2b179),
-        'font': QColor(0xffffff)
-    },
-    '16': {
-        'background': QColor(0xf59563),
-        'font': QColor(0xffffff)
-    },
-    '32': {
-        'background': QColor(0xf67c5f),
-        'font': QColor(0xffffff)
-    },
-    '64': {
-        'background': QColor(0xf65e3b),
-        'font': QColor(0xffffff)
-    },
-    '128': {
-        'background': QColor(0xedcf72),
-        'font': QColor(0xffffff)
-    },
-    '256': {
-        'background': QColor(0xedcc61),
-        'font': QColor(0xffffff)
-    },
-    '512': {
-        'background': QColor(0xedc850),
-        'font': QColor(0xffffff)
-    },
-    '1024': {
-        'background': QColor(0xedc53f),
-        'font': QColor(0xffffff)
-    },
-    '2048': {
-        'background': QColor(0xedc22e),
-        'font': QColor(0xffffff)
-    }
-}
+from config import (
+    ROW, COL, NUM_MAP_COLOR
+)
 
 
-class Game(QWidget): #
+class Game(QWidget):  #
 
     def __init__(self):
         super().__init__()
@@ -107,15 +63,17 @@ class Game(QWidget): #
         self.randomSetLabels(3)
 
     def keyPressEvent(self, e):
-        if e.key() == Qt.Key_Up:
-            self.gridMove('up')
-        elif e.key() == Qt.Key_Down:
-            self.gridMove('down')
-        elif e.key() == Qt.Key_Left:
-            self.gridMove('left')
-        elif e.key() == Qt.Key_Right:
-            self.gridMove('right')
-        elif e.key() == Qt.Key_R:
+        key_to_move = {
+            Qt.Key_Up: 'up',
+            Qt.Key_Down: 'down',
+            Qt.Key_Left: 'left',
+            Qt.Key_Right: 'right',
+            Qt.Key_R: 'reset'
+        }
+        move = key_to_move.get(e.key())
+        if move in ('up', 'down', 'left', 'right'):
+            self.gridMove(move)
+        elif move == 'reset':
             self.reset()
 
     def gridMove(self, direction):
@@ -129,69 +87,30 @@ class Game(QWidget): #
             self.isMove = False
             self.randomSetLabels(1)
 
+    def updateLabels(self, positions, texts):
+        for pos, text in zip(positions, texts):
+            self.setTextAndColor(pos, text)
+        for pos in positions[len(texts):]:
+            self.setTextAndColor(pos, '0')
+
     def removeEmptyLabel(self, direction):
         self.isLose = True
-        if direction == 'right':
-            for i in range(ROW):
-                row_point = []
-                for j in range(COL - 1, -1, -1):
-                    if self.labels[i * ROW + j].text() != '0':
-                        row_point.append(self.labels[i * ROW + j].text())
-                    else:
-                        self.isLose = False
-                j = COL - 1
-                for text in row_point:
-                    self.setTextAndColor(i * ROW + j, text)
-                    j -= 1
-                while j != -1:
-                    self.setTextAndColor(i * ROW + j, '0')
-                    j -= 1
-        elif direction == 'left':
-            for i in range(ROW):
-                row_point = []
-                for j in range(COL):
-                    if self.labels[i * ROW + j].text() != '0':
-                        row_point.append(self.labels[i * ROW + j].text())
-                    else:
-                        self.isLose = False
-                j = 0
-                for text in row_point:
-                    self.setTextAndColor(i * ROW + j, text)
-                    j += 1
-                while j != COL:
-                    self.setTextAndColor(i * ROW + j, '0')
-                    j += 1
-        elif direction == 'up':
-            for j in range(COL):
-                row_point = []
-                for i in range(ROW):
-                    if self.labels[i * ROW + j].text() != '0':
-                        row_point.append(self.labels[i * ROW + j].text())
-                    else:
-                        self.isLose = False
-                i = 0
-                for text in row_point:
-                    self.setTextAndColor(i * ROW + j, text)
-                    i += 1
-                while i != ROW:
-                    self.setTextAndColor(i * ROW + j, '0')
-                    i += 1
-        elif direction == 'down':
-            for j in range(COL):
-                col_point = []
-                for i in range(ROW - 1, -1, -1):
-                    if self.labels[i * ROW + j].text() != '0':
-                        col_point.append(self.labels[i * ROW + j].text())
-                    else:
-                        self.isLose = False
-                i = ROW - 1
-                for text in col_point:
-                    self.setTextAndColor(i * ROW + j, text)
-                    i -= 1
-                while i != -1:
-                    self.setTextAndColor(i * ROW + j, '0')
-                    i -= 1
+        direction_map = {
+            'right': (lambda i, j: i * ROW + j, range(ROW), range(COL - 1, -1, -1)),
+            'left': (lambda i, j: i * ROW + j, range(ROW), range(COL)),
+            'up': (lambda i, j: i * ROW + j, range(COL), range(ROW)),
+            'down': (lambda i, j: i * ROW + j, range(COL), reversed(range(ROW)))
+        }
+        get_pos, primary_range, secondary_range = direction_map[direction]
 
+        for primary in primary_range:
+            texts = [self.labels[get_pos(primary, secondary)].text() for secondary in secondary_range if
+                     self.labels[get_pos(primary, secondary)].text() != '0']
+            self.isLose = self.isLose and bool(texts)
+            positions = [get_pos(primary, secondary) for secondary in secondary_range]
+            self.updateLabels(positions, texts)
+
+    # todo do refactoring
     def mergeSameLabel(self, direction):
         if direction == 'right':
             for j in range(ROW):
@@ -256,8 +175,10 @@ class Game(QWidget): #
             self.setTextAndColor(label_index, num, setIsMove=False)
 
     def getEmptyGrid(self):
-        results = [index for index, labels in enumerate(self.labels) if labels.text() == '0']
-        return results
+        return [
+            index
+            for index, labels in enumerate(self.labels) if labels.text() == '0'
+        ]
 
     def setTextAndColor(self, index, num, setIsMove=True):
         if setIsMove:
@@ -290,9 +211,3 @@ class Game(QWidget): #
                                       QMessageBox.Ok)
         if button == QMessageBox.Ok:
             self.reset()
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    game = Game()
-    sys.exit(app.exec_())
